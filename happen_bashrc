@@ -1,0 +1,3 @@
+if [ -f ~/need_config ]; then
+   sudo post_config.sh
+fi
