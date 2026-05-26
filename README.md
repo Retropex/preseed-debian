@@ -1,3 +1,16 @@
 ### Debian preseed repo for DATUM box
 
-todo
+Depedency:
+```
+sudo apt install -y xorriso wget gzip
+```
+
+Build:
+```
+./build.sh
+```
+
+You can clean the build files with:
+```
+./build.sh clean
+```
