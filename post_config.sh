@@ -27,7 +27,7 @@ do
 	fi
 done
 
-if echo "leo:$PASSWORD" | chpasswd; then
+if echo "box:$PASSWORD" | chpasswd; then
 	NEWT_COLORS="root=white,green" whiptail --msgbox "Password sucessfully changed!" 0 0
 else
 	NEWT_COLORS="root=white,red" whiptail --msgbox "Failed to change password." 0 0
@@ -39,6 +39,7 @@ whiptail --msgbox "We will now proceed to the Bitcoin node and DATUM Gateway con
 
 if ! dpkg-reconfigure -plow bitcoin-knots datum-gateway; then
 	NEWT_COLORS="root=white,red" whiptail --msgbox "Failed to reconfigure Bitcoin Knots and/or DATUM Gateway" 0 0
+	exit 1
 fi
 
 whiptail --msgbox "Your datum box is now configured!" 0 0
