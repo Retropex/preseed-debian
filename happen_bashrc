@@ -1,3 +1,5 @@
+alias menu="sudo menu.sh"
+
 if [ -f ~/need_config ]; then
    sudo post_config.sh
 fi
