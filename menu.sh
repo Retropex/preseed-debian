@@ -100,13 +100,35 @@ function datum_settings {
 	done
 }
 
+function tool_menu {
+	TOOLMENU="choice"
+	while [ "$TOOLMENU" != "2." ]
+	do
+	TOOLMENU=$(whiptail --nocancel --title "Tools" --menu "" 0 0 0 "1." "AssumeUTXO" \
+																   "2." "Return to main menu" 3>&1 1>&2 2>&3)
+	
+	case $TOOLMENU in
+		1.)
+			URL=$(whiptail --inputbox "Please enter the link to the UTXO snapshot:" 0 0 3>&1 1>&2 2>&3) || break
+			whiptail --msgbox "Loading a snapshot will take some time, please be patient.\nOnce done, please consult the logs of Bitcoin Knots to see the sync progression." 0 0
+			
+			rm -rf /var/lib/bitcoin/snap/
+			sudo -u bitcoin mkdir -p /var/lib/bitcoin/snap
+			sudo -u bitcoin wget $URL -O /var/lib/bitcoin/snap/snapshot
+			sudo -u bitcoin bitcoin-cli -conf=/etc/bitcoin/bitcoin.conf -rpcclienttimeout=0 loadtxoutset /var/lib/bitcoin/snap/snapshot
+			rm -rf /var/lib/bitcoin/snap/
+		;;
+	esac
+	done
+}
+
 if [ "$(id -u)" -ne 0 ]; then
 	whiptail --msgbox "This script must be run with sudo." 0 0
 	exit 1
 fi
 
 MENU="initial"
-while [ "$MENU" != "7." ]
+while [ "$MENU" != "8." ]
 do
 MENU=$(whiptail --nocancel --title "DATUM box menu" --menu "" 0 0 0 "1." "Show number of stratum workers" \
 																	"2." "Show estimated hashrate" \
@@ -114,7 +136,8 @@ MENU=$(whiptail --nocancel --title "DATUM box menu" --menu "" 0 0 0 "1." "Show n
 																	"4." "Logs menu" \
 																	"5." "Bitcoin Knots settings" \
 																	"6." "DATUM Gateway settings" \
-																	"7." "Quit" 3>&1 1>&2 2>&3)
+																	"7." "Tools" \
+																	"8." "Quit" 3>&1 1>&2 2>&3)
 
 case $MENU in
 	1.)
@@ -159,6 +182,10 @@ case $MENU in
 	
 	6.)
 		datum_settings
+	;;
+	
+	7.)
+	 tool_menu
 	;;
 esac
 done
