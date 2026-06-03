@@ -3,6 +3,7 @@
 set -e
 
 function logs {
+	trap 'true' INT
 	LOGSMENU="choice"
 	while [ "$LOGSMENU" != "5." ]
 	do
@@ -14,22 +15,23 @@ function logs {
 	
 	case $LOGSMENU in
 		1.)
-			journalctl -f -u bitcoin-knots
+			journalctl -f -u bitcoin-knots || true
 		;;
 		
 		2.)
-			journalctl -f -u datum-gateway
+			journalctl -f -u datum-gateway || true
 		;;
 		
 		3.)
-			journalctl -r -u bitcoin-knots
+			journalctl -r -u bitcoin-knots || true
 		;;
 		
 		4.)
-			journalctl -r -u datum-gateway
+			journalctl -r -u datum-gateway || true
 		;;
 	esac
 	done
+	trap - INT
 }
 
 function knots_settings {
