@@ -34,11 +34,12 @@ echo $SHASUM | sha512sum -c
 xorriso -osirrox on -indev debian-13.5.0-$1-netinst.iso -extract / debianfiles
 chmod +w -R debianfiles/install.$ISOISTDIR/
 gunzip debianfiles/install.$ISOISTDIR/initrd.gz
-cp ../preseed.cfg ../post_config.sh ../happen_bashrc ../menu.sh .
+cp ../preseed.cfg ../post_config.sh ../happen_bashrc ../menu.sh ../late_command.sh .
 echo preseed.cfg | cpio -H newc -o -A -F debianfiles/install.$ISOISTDIR/initrd
 echo post_config.sh | cpio -H newc -o -A -F debianfiles/install.$ISOISTDIR/initrd
 echo menu.sh | cpio -H newc -o -A -F debianfiles/install.$ISOISTDIR/initrd
 echo happen_bashrc | cpio -H newc -o -A -F debianfiles/install.$ISOISTDIR/initrd
+echo late_command.sh | cpio -H newc -o -A -F debianfiles/install.$ISOISTDIR/initrd
 gzip debianfiles/install.$ISOISTDIR/initrd
 chmod -w -R debianfiles/install.$ISOISTDIR/
 
