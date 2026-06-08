@@ -6,3 +6,5 @@ cat happen_bashrc >> /target/home/box/.bashrc
 touch /target/home/box/need_config
 cp post_config.sh /target/usr/local/bin/
 cp menu.sh /target/usr/local/bin/
+
+echo -e "\nWelcome in your DATUM Box! \nTo open the datum box menu please type \"menu\" and press enter." > /target/etc/motd
