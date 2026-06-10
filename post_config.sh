@@ -2,6 +2,23 @@
 
 set -e
 
+function updateconfig {
+	jq --argjson MAX_CLIENTS_PER_THREAD "$MAX_CLIENTS_PER_THREAD" '.stratum.max_clients_per_thread = $MAX_CLIENTS_PER_THREAD' /etc/datum-gateway/datum_gateway_config.json > /etc/datum-gateway/datum_gateway_config.json.tmp && mv /etc/datum-gateway/datum_gateway_config.json.tmp /etc/datum-gateway/datum_gateway_config.json
+	jq --argjson MAX_THREADS "$MAX_THREADS" '.stratum.max_threads = $MAX_THREADS' /etc/datum-gateway/datum_gateway_config.json > /etc/datum-gateway/datum_gateway_config.json.tmp && mv /etc/datum-gateway/datum_gateway_config.json.tmp /etc/datum-gateway/datum_gateway_config.json
+	jq --argjson MAX_CLIENTS "$MAX_CLIENTS" '.stratum.max_clients = $MAX_CLIENTS' /etc/datum-gateway/datum_gateway_config.json > /etc/datum-gateway/datum_gateway_config.json.tmp && mv /etc/datum-gateway/datum_gateway_config.json.tmp /etc/datum-gateway/datum_gateway_config.json
+	jq --argjson VARDIFF_MIN "$VARDIFF_MIN" '.stratum.vardiff_min = $VARDIFF_MIN' /etc/datum-gateway/datum_gateway_config.json > /etc/datum-gateway/datum_gateway_config.json.tmp && mv /etc/datum-gateway/datum_gateway_config.json.tmp /etc/datum-gateway/datum_gateway_config.json
+	jq --argjson WORK_UPDATE_SECONDS "$WORK_UPDATE_SECONDS" '.bitcoind.work_update_seconds = $WORK_UPDATE_SECONDS' /etc/datum-gateway/datum_gateway_config.json > /etc/datum-gateway/datum_gateway_config.json.tmp && mv /etc/datum-gateway/datum_gateway_config.json.tmp /etc/datum-gateway/datum_gateway_config.json
+	sed -i -E "/^#?rpcthreads=/c\\rpcthreads=$RPCTHREADS" /etc/bitcoin/bitcoin.conf
+	sed -i -E "/^#?rpcworkqueue=/c\\rpcworkqueue=$RPCWORKQUEUE" /etc/bitcoin/bitcoin.conf
+	sed -i -E "/^#?maxmempool=/c\\maxmempool=$MAXMEMPOOL" /etc/bitcoin/bitcoin.conf
+	sed -i -E "/^#?blockmaxsize=/c\\blockmaxsize=$BLOCKMAXSIZE" /etc/bitcoin/bitcoin.conf
+	sed -i -E "/^#?blockmaxweight=/c\\blockmaxweight=$BLOCKMAXWEIGHT" /etc/bitcoin/bitcoin.conf
+	sed -i -E "/^#?maxorphantx=/c\\maxorphantx=$BLOCKMAXWEIGHT" /etc/bitcoin/bitcoin.conf
+	sed -i -E "/^#?maxorphantx=/c\\maxorphantx=$BLOCKMAXWEIGHT" /etc/bitcoin/bitcoin.conf
+	sed -i -E "/^#?blockreconstructionextratxn=/c\\blockreconstructionextratxn=$BLOCKRECONSTRUCTIONEXTRATXN" /etc/bitcoin/bitcoin.conf
+	sed -i -E "/^#?blockreconstructionextratxnsize=/c\\blockreconstructionextratxnsize=$BLOCKRECONSTRUCTIONEXTRATXNSIZE" /etc/bitcoin/bitcoin.conf
+}
+
 if ! command -v whiptail &> /dev/null; then
 	echo "Whiptail is not installed, impossible to show post installation steps."
 	echo "Please run \"sudo apt install whiptail -y\" then logout and login again"
@@ -37,7 +54,54 @@ unset PASSWORD PASSWORD2
 
 whiptail --msgbox "We will now proceed to the Bitcoin node and DATUM Gateway configuration." 0 0
 
-if ! dpkg-reconfigure -plow bitcoin-knots datum-gateway; then
+SIZE=$(whiptail --nocancel --title "Mining size" --menu "Choose how much ASICs you will connect to this DATUM box.\nThe settings of DATUM Gateway will be adjusted accordingly.\nYou can also manually configure it." 0 0 0 "1." "10K machines" \
+																																																							"2." "50k machines" \
+																																																							"3." "Manual configuration" 3>&1 1>&2 2>&3)
+
+case $SIZE in
+	1.)
+		MAX_CLIENTS_PER_THREAD=2000
+		MAX_THREADS=10
+		MAX_CLIENTS=20000
+		VARDIFF_MIN=16384
+		WORK_UPDATE_SECONDS=40
+		RPCTHREADS=64
+		RPCWORKQUEUE=64
+		MAXMEMPOOL=1000
+		BLOCKMAXSIZE=3985000
+		BLOCKMAXWEIGHT=3985000
+		BLOCKRECONSTRUCTIONEXTRATXN=1000000
+		BLOCKRECONSTRUCTIONEXTRATXNSIZE=100
+		MAXORPHANTX=50000
+		updateconfig
+	;;
+	
+	2.)
+		MAX_CLIENTS_PER_THREAD=4096
+		MAX_THREADS=24
+		MAX_CLIENTS=98304
+		VARDIFF_MIN=16384
+		WORK_UPDATE_SECONDS=40
+		RPCTHREADS=64
+		RPCWORKQUEUE=64
+		MAXMEMPOOL=1000
+		BLOCKMAXSIZE=3985000
+		BLOCKMAXWEIGHT=3985000
+		BLOCKRECONSTRUCTIONEXTRATXN=1000000
+		BLOCKRECONSTRUCTIONEXTRATXNSIZE=100
+		MAXORPHANTX=50000
+		updateconfig
+		sed -i -E "/^LimitNOFILE=/c\\LimitNOFILE=131072" /usr/lib/systemd/system/datum-gateway.service
+		systemctl daemon-reload
+	;;
+esac
+
+if [ "$SIZE" = "3." ]; then
+	if ! dpkg-reconfigure -plow bitcoin-knots datum-gateway; then
+		NEWT_COLORS="root=white,red" whiptail --msgbox "Failed to reconfigure Bitcoin Knots and/or DATUM Gateway" 0 0
+		exit 1
+	fi
+elif ! dpkg-reconfigure -pmedium bitcoin-knots datum-gateway; then
 	NEWT_COLORS="root=white,red" whiptail --msgbox "Failed to reconfigure Bitcoin Knots and/or DATUM Gateway" 0 0
 	exit 1
 fi
