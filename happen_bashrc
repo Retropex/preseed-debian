@@ -1,5 +1,6 @@
 alias menu="sudo menu.sh"
 
 if [ -f ~/need_config ]; then
+   echo "Please type your password again:"
    sudo post_config.sh
 fi
