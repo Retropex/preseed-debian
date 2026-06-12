@@ -122,13 +122,33 @@ function tool_menu {
 	done
 }
 
+function power {
+	POWER="choice"
+	while [ "$POWER" != "3." ]
+	do
+	POWER=$(whiptail --nocancel --title "Power" --menu "" 0 0 0 "1." "Reboot" \
+																"2." "Poweroff" \
+																"3." "Return to main menu" 3>&1 1>&2 2>&3)
+	
+	case $POWER in
+		1.)
+			reboot
+		;;
+		
+		2.)
+			poweroff
+		;;
+	esac
+	done
+}
+
 if [ "$(id -u)" -ne 0 ]; then
 	whiptail --msgbox "This script must be run with sudo." 0 0
 	exit 1
 fi
 
 MENU="initial"
-while [ "$MENU" != "8." ]
+while [ "$MENU" != "9." ]
 do
 MENU=$(whiptail --nocancel --title "DATUM box menu" --menu "" 0 0 0 "1." "Show number of stratum workers" \
 																	"2." "Show estimated hashrate" \
@@ -137,7 +157,8 @@ MENU=$(whiptail --nocancel --title "DATUM box menu" --menu "" 0 0 0 "1." "Show n
 																	"5." "Bitcoin Knots settings" \
 																	"6." "DATUM Gateway settings" \
 																	"7." "Tools" \
-																	"8." "Quit" 3>&1 1>&2 2>&3)
+																	"8." "Power" \
+																	"9." "Quit" 3>&1 1>&2 2>&3)
 
 case $MENU in
 	1.)
@@ -185,7 +206,11 @@ case $MENU in
 	;;
 	
 	7.)
-	 tool_menu
+		tool_menu
+	;;
+	
+	8.)
+		power
 	;;
 esac
 done
