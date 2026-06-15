@@ -109,5 +109,10 @@ fi
 whiptail --msgbox "Your datum box is now configured!" 0 0
 
 if [ -f /home/box/need_config ]; then
+	userdel -f -r factory
+	rm /usr/local/bin/factory.sh
+	rm /usr/local/bin/post_config.sh
 	rm /home/box/need_config
 fi
+
+sudo menu.sh
