@@ -102,13 +102,24 @@ function datum_settings {
 
 function tool_menu {
 	TOOLMENU="choice"
-	while [ "$TOOLMENU" != "2." ]
+	while [ "$TOOLMENU" != "3." ]
 	do
-	TOOLMENU=$(whiptail --nocancel --title "Tools" --menu "" 0 0 0 "1." "AssumeUTXO" \
-																   "2." "Return to main menu" 3>&1 1>&2 2>&3)
+	TOOLMENU=$(whiptail --nocancel --title "Tools" --menu "" 0 0 0 "1." "AssumeUTXO (haf.ovh link)" \
+																   "2." "AssumeUTXO (custom link)" \
+																   "3." "Return to main menu" 3>&1 1>&2 2>&3)
 	
 	case $TOOLMENU in
 		1.)
+			whiptail --msgbox "Loading a snapshot will take some time, please be patient.\nOnce done, please consult the logs of Bitcoin Knots to see the sync progression." 0 0
+			
+			rm -rf /var/lib/bitcoin/snap/
+			sudo -u bitcoin mkdir -p /var/lib/bitcoin/snap
+			sudo -u bitcoin wget https://cdn.orangepill.ovh/utxo.dat -O /var/lib/bitcoin/snap/snapshot
+			sudo -u bitcoin bitcoin-cli -conf=/etc/bitcoin/bitcoin.conf -rpcclienttimeout=0 loadtxoutset /var/lib/bitcoin/snap/snapshot
+			rm -rf /var/lib/bitcoin/snap/
+		;;
+		
+		2.)
 			URL=$(whiptail --inputbox "Please enter the link to the UTXO snapshot:" 0 0 3>&1 1>&2 2>&3) || break
 			whiptail --msgbox "Loading a snapshot will take some time, please be patient.\nOnce done, please consult the logs of Bitcoin Knots to see the sync progression." 0 0
 			
