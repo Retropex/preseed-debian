@@ -11,8 +11,14 @@ sudo apt install -y xorriso wget gzip
 
 Build:
 ```
-./build.sh [amd64/arm64]
+./build.sh [args]
 ```
+
+`-a <bitcoin address>` if set, this address will be automatically configured as `pool_address` for DATUM Gateway
+
+`-c [amd64/arm64]` required, specify which CPU architecture that should be built.
+
+`-s "<SSH pubkey>"` if set, this public key will be allowed for ssh connections for the `box` user. Password login will be disabled.
 
 You can clean the build files with:
 ```

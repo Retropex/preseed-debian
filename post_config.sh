@@ -2,6 +2,9 @@
 
 set -e
 
+# Space for automatic config
+#
+
 function updateconfig {
 	jq --argjson MAX_CLIENTS_PER_THREAD "$MAX_CLIENTS_PER_THREAD" '.stratum.max_clients_per_thread = $MAX_CLIENTS_PER_THREAD' /etc/datum-gateway/datum_gateway_config.json > /etc/datum-gateway/datum_gateway_config.json.tmp && mv /etc/datum-gateway/datum_gateway_config.json.tmp /etc/datum-gateway/datum_gateway_config.json
 	jq --argjson MAX_THREADS "$MAX_THREADS" '.stratum.max_threads = $MAX_THREADS' /etc/datum-gateway/datum_gateway_config.json > /etc/datum-gateway/datum_gateway_config.json.tmp && mv /etc/datum-gateway/datum_gateway_config.json.tmp /etc/datum-gateway/datum_gateway_config.json
