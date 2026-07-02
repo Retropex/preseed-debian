@@ -2,7 +2,7 @@
 
 This image takes care of installing [Debian trixie](https://www.debian.org) automatically alongside [Bitcoin Knots](https://tracker.debian.org/pkg/bitcoin-knots) and [DATUM Gateway](https://tracker.debian.org/pkg/datum-gateway) directly from the [stable backport](https://backports.debian.org) repository of Debian.
 The behavior of the installer is to automatically select the biggest disk.
-The default user is `box` and the password is `test` (It will automatically ask you to change it upon first login).
+The default user is `box` and the password is `datumbox` (It will automatically ask you to change it upon first login).
 
 Depedency:
 ```
