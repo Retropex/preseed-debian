@@ -109,6 +109,16 @@ elif ! dpkg-reconfigure -pmedium bitcoin-knots datum-gateway; then
 	exit 1
 fi
 
+if whiptail --title "Firewall" --nocancel --yesno "Enabling the firewall will only allow inbound connections from these ports:\n\n - 8333 (bitcoind P2P port)\n - 23334 (DATUM Gateway stratum port)\n - 7152 (DATUM Gateway WEB dashboard)\n - 22 (ssh)\n\nWould you like to enable firewall?" 0 0; then
+	apt-get install ufw -y
+	ufw allow 8333 comment "bitcoind P2P port"
+	ufw allow 23334 comment "DATUM Gateway stratum port"
+	ufw allow 7152 comment "DATUM Gateway WEB dashboard"
+	ufw allow 22 comment "ssh"
+	ufw enable
+	whiptail --title "Check Firewall" --msgbox "You can consult the firewall rules anytime with the \"sudo ufw status\" command." 0 0
+fi
+
 whiptail --msgbox "Your datum box is now configured!" 0 0
 
 if [ -f /home/box/need_config ]; then
