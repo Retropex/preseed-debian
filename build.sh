@@ -17,14 +17,14 @@ while getopts "a:s:c:" opt; do
 		fi
 		
 		if [ "$OPTARG" = "amd64" ]; then
-			URL=https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-13.5.0-amd64-netinst.iso
+			URL=https://cdimage.debian.org/mirror/cdimage/archive/13.5.0/amd64/iso-cd/debian-13.5.0-amd64-netinst.iso
 			SHASUM="b2be60c555e328b4fa5ebb2d0e5c7ee6bc3eb4250c4dcfd3f78b8d9aec596efdf9f14f10a898c280eb252d50bbac91ea0a2bba29736df0d4985d50d4c8d77519  debian-13.5.0-amd64-netinst.iso"
 			ISOISTDIR=amd
 			ARCH=amd64
 		fi
 
 		if [ "$OPTARG" = "arm64" ]; then
-			URL=https://cdimage.debian.org/debian-cd/current/arm64/iso-cd/debian-13.5.0-arm64-netinst.iso
+			URL=https://cdimage.debian.org/mirror/cdimage/archive/13.5.0/arm64/iso-cd/debian-13.5.0-arm64-netinst.iso
 			SHASUM="e81aa710007e5d6cf05da300431223a3f75ed7264f244cb374f59c50037f1d96056e378894768c710e6f165c621f3ad7ad0fbc0cc01084488d797788237d8b2b  debian-13.5.0-arm64-netinst.iso"
 			ISOISTDIR=a64
 			ARCH=arm64
