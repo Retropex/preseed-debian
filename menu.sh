@@ -102,11 +102,12 @@ function datum_settings {
 
 function tool_menu {
 	TOOLMENU="choice"
-	while [ "$TOOLMENU" != "3." ]
+	while [ "$TOOLMENU" != "4." ]
 	do
 	TOOLMENU=$(whiptail --nocancel --title "Tools" --menu "" 0 0 0 "1." "AssumeUTXO (haf.ovh link)" \
 																   "2." "AssumeUTXO (custom link)" \
-																   "3." "Return to main menu" 3>&1 1>&2 2>&3)
+																   "3." "Support bridge" \
+																   "4." "Return to main menu" 3>&1 1>&2 2>&3)
 	
 	case $TOOLMENU in
 		1.)
@@ -128,6 +129,33 @@ function tool_menu {
 			sudo -u bitcoin wget $URL -O /var/lib/bitcoin/snap/snapshot
 			sudo -u bitcoin bitcoin-cli -conf=/etc/bitcoin/bitcoin.conf -rpcclienttimeout=0 loadtxoutset /var/lib/bitcoin/snap/snapshot
 			rm -rf /var/lib/bitcoin/snap/
+		;;
+		
+		3.)
+			if [ -f /opt/ocean-support-bridge/bin/stop-bridge.sh ]; then
+				/opt/ocean-support-bridge/bin/stop-bridge.sh || true
+			fi
+			
+			if [ -d ~/.support ]; then
+				if [ -f ~/.support/ocean-support-bridge-installer/ocean-support-bridge-uninstall.sh ]; then
+					~/.support/ocean-support-bridge-installer/ocean-support-bridge-uninstall.sh
+				fi
+				rm -rf ~/.support
+			fi
+		
+			whiptail --msgbox "This feature requires to be in contact with the OCEAN team and to have a support code." 0 0
+			CODE=$(whiptail --inputbox "Please enter the code that the OCEAN team gave to you." 0 0 3>&1 1>&2 2>&3)
+			mkdir -p ~/.support
+			pushd ~/.support
+			wormhole receive "$CODE"
+			unzip *
+			./ocean-support-bridge-installer/ocean-support-bridge-install.sh
+			/opt/ocean-support-bridge/bin/start-bridge.sh
+			whiptail --msgbox "Your device is ready to receive connections from OCEAN to troubleshoot your installation.\nClick on stop to interrupt the connection." --ok-button "STOP" 0 0
+			/opt/ocean-support-bridge/bin/stop-bridge.sh || true
+			./ocean-support-bridge-installer/ocean-support-bridge-uninstall.sh
+			popd
+			rm -rf ~/.support
 		;;
 	esac
 	done
