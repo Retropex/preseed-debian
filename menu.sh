@@ -15,7 +15,7 @@ function logs {
 	
 	case $LOGSMENU in
 		1.)
-			journalctl -f -u bitcoin-knots || true
+			journalctl -f -u bitcoin-core || true
 		;;
 		
 		2.)
@@ -23,7 +23,7 @@ function logs {
 		;;
 		
 		3.)
-			journalctl -r -u bitcoin-knots || true
+			journalctl -r -u bitcoin-core || true
 		;;
 		
 		4.)
@@ -46,22 +46,22 @@ function knots_settings {
 	
 	case $KNOTSMENU in
 		1.)
-			systemctl start bitcoin-knots
+			systemctl start bitcoin-core
 			NEWT_COLORS="root=white,green" whiptail --msgbox "Bitcoin Knots has started" 0 0
 		;;
 		
 		2.)
-			systemctl stop bitcoin-knots
+			systemctl stop bitcoin-core
 			NEWT_COLORS="root=white,green" whiptail --msgbox "Bitcoin Knots has stopped" 0 0
 		;;
 		
 		3.)
-			systemctl restart bitcoin-knots
+			systemctl restart bitcoin-core
 			NEWT_COLORS="root=white,green" whiptail --msgbox "Bitcoin Knots has restarted" 0 0
 		;;
 		
 		4.)
-			dpkg-reconfigure bitcoin-knots
+			dpkg-reconfigure bitcoin-core
 		;;
 	esac
 	done
