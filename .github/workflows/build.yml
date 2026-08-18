@@ -1,0 +1,37 @@
+name: build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  amd64:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: build the amd64 image
+        run: ./build.sh -c amd64
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: DATUM-box-amd64.iso
+          path: DATUM-box-amd64.iso
+
+  arm64:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: build the arm64 image
+        run: ./build.sh -c arm64
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: DATUM-box-arm64.iso
+          path: DATUM-box-arm64.iso
